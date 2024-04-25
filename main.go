@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"GoRSS/internal/database"
 
@@ -38,9 +39,12 @@ func main() {
 		log.Fatal("Can't connect to the database:", err)
 	}
 
+	db := database.New(conn)
 	apiCfg := apiConfig{
-		DB: database.New(conn),
+		DB: db,
 	}
+
+	go startScraping(db, 10, time.Minute)
 
 	// Cors Route
 	router := chi.NewRouter()
